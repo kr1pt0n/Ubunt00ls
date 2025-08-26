@@ -1,4 +1,4 @@
-# Ubunt00l$
+# Ubunt00ls
 
 Ubuntu ofrece un equilibrio perfecto entre robustez, facilidad de uso y un ecosistema ampliamente soportado, lo que garantiza que el sistema operativo funcione de manera fluida y sin interrupciones, ideal para desarrollar y ejecutar herramientas sin complicaciones.
 
