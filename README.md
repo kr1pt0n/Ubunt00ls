@@ -1,5 +1,5 @@
 # Ubunt00ls — Instalador de herramientas de Pentesting para Ubuntu
-
+[![N|Solid]((https://www.tecmint.com/wp-content/uploads/2012/11/SSH-Banner-Warning-Message.png))]
 Script en **bash** que automatiza la instalación de un kit de herramientas de pentesting y networking en **Ubuntu 24.04 LTS**.
 
 > ⚠️ **Aviso legal:** Usa estas herramientas únicamente en entornos propios o con permiso explícito. El uso indebido puede ser ilegal.
