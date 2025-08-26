@@ -289,15 +289,12 @@ print_centered() {
 progress_bar() {
     local tool="$1"
     local display="$2"
-    local duration=20
+    local duration=20  # longitud de la barra
+    local margin=$(( (TERM_WIDTH - BOX_WIDTH) / 2 ))
     local bar=""
+    local percent=0
 
-    for i in $(seq 1 $duration); do
-        sleep 0.01
-        bar+="#"
-    done
-
-    local status
+    # Verificar estado de la herramienta
     if command -v "$tool" &> /dev/null || \
        { [ "$tool" = "rockyou.txt" ] && [ -f "$ROCKYOU_PATH" ]; } || \
        { [ "$tool" = "SecLists" ] && [ -d "$SECLISTS_DIR" ]; }; then
@@ -306,9 +303,25 @@ progress_bar() {
         status="${RED}✘ FAIL${NC}"
     fi
 
-    local margin=$(( (TERM_WIDTH - BOX_WIDTH) / 2 ))
+    # Mostrar nombre alineado
     printf "%*s" "$margin" ""
-    printf "[+] %-24s : [%-20s] %b\n" "$display" "$bar" "$status"
+    printf "[+] %-22s : [" "$display"
+
+    # Simular carga con porcentaje
+    for i in $(seq 1 $duration); do
+        bar+="#"
+        percent=$(( i * 100 / duration ))
+
+        # Regresar el cursor al inicio de la barra (sin hacer salto de línea)
+        printf "\r"
+        printf "%*s" "$margin" ""
+        printf "[+] %-22s : [${YELLOW}%-20s${NC}] %3d%%" "$display" "$bar" "$percent"
+
+        sleep 0.03
+    done
+
+    # Mostrar estado final (✔ OK o ✘ FAIL)
+    printf "  %b\n" "$status"
 }
 
 # =============================
@@ -366,3 +379,4 @@ print_border
 print_centered "¡Tu entorno está listo-HappyHacking! ✔" "$BOLD$GREEN"
 print_centered "Reinicia tu sesión para aplicar permisos de Wireshark." "$BOLD$YELLOW"
 print_border
+
