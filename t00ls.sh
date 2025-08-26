@@ -13,21 +13,49 @@ fi
 sudo -v
 
 # =============================
-# COLORES PARA MENSAJES
+# COLORES Y FORMATO
 # =============================
 GREEN="\e[32m"
 RED="\e[31m"
 YELLOW="\e[33m"
+BLUE="\e[34m"
+BOLD="\e[1m"
 NC="\e[0m"
 
-log() {
-    echo -e "${GREEN}[+]${NC} $1"
+# Delay para no parecer robot
+DELAY=0.2
+
+# =============================
+# BANNER UBUNT00L$
+# =============================
+echo -e "${GREEN}"
+cat << "EOF"
+
+     /\                 /\ 
+    / \'._   (\_/)   _.'/ \ 
+   /_.''._'--('.')--'_.''._\ 
+   | \_ / `;=/ " \=;` \ _/ | 
+    \/ `\__|`\___/`|__/`  \/ 
+         \(/|\)/       
+        ubunt00l$
+
+EOF
+echo -e "${NC}"
+
+# =============================
+# LOGGING ESTÉTICO
+# =============================
+log_ok() {
+    printf "%-35s [%b✔ OK%b]\n" "$1" "${GREEN}${BOLD}" "${NC}"
 }
-warn() {
-    echo -e "${YELLOW}[!]${NC} $1"
+log_fail() {
+    printf "%-35s [%b✘ FAIL%b]\n" "$1" "${RED}${BOLD}" "${NC}"
 }
-error() {
-    echo -e "${RED}[-]${NC} $1"
+log_info() {
+    printf "%-35s [%b* INFO%b]\n" "$1" "${BLUE}" "${NC}"
+}
+log_warn() {
+    printf "%-35s [%b! WARN%b]\n" "$1" "${YELLOW}" "${NC}"
 }
 
 # =============================
@@ -37,38 +65,45 @@ install_if_missing() {
     local cmd="$1"
     local pkg="$2"
     if command -v "$cmd" &> /dev/null; then
-        log "$pkg ya está instalado, saltando..."
+        log_ok "$pkg"
     else
-        log "Instalando $pkg..."
-        sudo apt install -y "$pkg"
+        log_info "$pkg instalando..."
+        sleep $DELAY
+        if sudo apt install -y "$pkg" &>/dev/null; then
+            log_ok "$pkg"
+        else
+            log_fail "$pkg"
+        fi
     fi
+    sleep $DELAY
 }
 
 check_tool() {
-    if command -v "$1" &> /dev/null; then
-        log "$2 instalado correctamente"
+    local cmd="$1"
+    local name="$2"
+    if command -v "$cmd" &> /dev/null; then
+        log_ok "$name"
     else
-        error "$2 no se detectó correctamente"
+        log_fail "$name"
     fi
 }
 
 check_hcxtools() {
     if command -v hcxpcapngtool &> /dev/null || \
        command -v hcxhashtool &> /dev/null; then
-        log "hcxtools instalado correctamente"
+        log_ok "hcxtools"
     else
-        error "hcxtools no se detectó correctamente"
+        log_fail "hcxtools"
     fi
 }
 
 # =============================
 # INICIO DE INSTALACIÓN
 # =============================
-
-log "Actualizando lista de paquetes..."
+log_info "Actualizando lista de paquetes..."
 sudo apt update -y
 
-log "Instalando herramientas esenciales..."
+log_info "Instalando herramientas esenciales..."
 install_if_missing curl curl
 install_if_missing wget wget
 install_if_missing git git
@@ -78,7 +113,7 @@ install_if_missing unzip unzip
 install_if_missing jq jq
 install_if_missing exiftool exiftool
 
-log "Instalando herramientas de pentesting..."
+log_info "Instalando herramientas de pentesting..."
 install_if_missing wfuzz wfuzz
 install_if_missing gobuster gobuster
 install_if_missing hashcat hashcat
@@ -103,32 +138,32 @@ install_if_missing sherlock sherlock
 # =============================
 # Ruby + Gems (Evil-WinRM & Wpscan)
 # =============================
-log "Instalando Ruby y dependencias..."
+log_info "Instalando Ruby y dependencias..."
 install_if_missing gem ruby-rubygems
 install_if_missing ruby-dev ruby-dev
 
-log "Instalando Evil-WinRM con gem..."
+log_info "Instalando Evil-WinRM..."
 if gem list -i evil-winrm &> /dev/null; then
-    log "evil-winrm ya está instalado."
+    log_ok "evil-winrm"
 else
-    sudo gem install evil-winrm
+    sudo gem install evil-winrm && log_ok "evil-winrm" || log_fail "evil-winrm"
 fi
 
-log "Instalando Wpscan con gem..."
+log_info "Instalando Wpscan..."
 if gem list -i wpscan &> /dev/null; then
-    log "wpscan ya está instalado."
+    log_ok "wpscan"
 else
-    sudo gem install wpscan
+    sudo gem install wpscan && log_ok "wpscan" || log_fail "wpscan"
 fi
 
 # =============================
 # CrackMapExec con Snap
 # =============================
-log "Instalando CrackMapExec con snap..."
+log_info "Instalando CrackMapExec..."
 if command -v crackmapexec &> /dev/null; then
-    log "CrackMapExec ya está instalado."
+    log_ok "crackmapexec"
 else
-    sudo snap install crackmapexec
+    sudo snap install crackmapexec && log_ok "crackmapexec" || log_fail "crackmapexec"
 fi
 
 # =============================
@@ -138,43 +173,48 @@ WORDLISTS_DIR="/usr/share/wordlists"
 SECLISTS_DIR="$WORDLISTS_DIR/SecLists"
 ROCKYOU_PATH="$WORDLISTS_DIR/rockyou.txt"
 
-log "Instalando SecLists desde GitHub..."
-if [ -d "$SECLISTS_DIR" ]; then
-    log "SecLists ya existe en $SECLISTS_DIR, actualizando..."
-    cd "$SECLISTS_DIR" && sudo git pull
+log_info "Instalando SecLists..."
+if [ -d "$SECLISTS_DIR/.git" ]; then
+    log_info "SecLists existe, reseteando..."
+    cd "$SECLISTS_DIR"
+    sudo git fetch --all &>/dev/null
+    sudo git reset --hard origin/master &>/dev/null
+    log_ok "SecLists"
 else
-    sudo git clone https://github.com/danielmiessler/SecLists.git "$SECLISTS_DIR"
+    sudo rm -rf "$SECLISTS_DIR" 2>/dev/null || true
+    sudo git clone https://github.com/danielmiessler/SecLists.git "$SECLISTS_DIR" &>/dev/null \
+        && log_ok "SecLists" || log_fail "SecLists"
 fi
 
-log "Verificando rockyou.txt..."
+log_info "Verificando rockyou.txt..."
 if [ -f "$ROCKYOU_PATH" ]; then
-    log "rockyou.txt ya existe en $ROCKYOU_PATH"
+    log_ok "rockyou.txt"
 else
-    warn "rockyou.txt no encontrado. Descargando desde fuente confiable..."
+    log_warn "Descargando rockyou.txt..."
     wget -q https://github.com/brannondorsey/naive-hashcat/releases/download/data/rockyou.txt -O /tmp/rockyou.txt
     sudo mv /tmp/rockyou.txt "$ROCKYOU_PATH"
-    log "rockyou.txt descargado en $ROCKYOU_PATH"
+    log_ok "rockyou.txt"
 fi
-
+ 
 # =============================
 # Metasploit
 # =============================
-log "Instalando Metasploit Framework..."
+log_info "Instalando Metasploit..."
 if command -v msfconsole &> /dev/null; then
-    log "Metasploit ya está instalado, saltando..."
+    log_ok "Metasploit"
 else
     curl -s https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb > msfinstall
     chmod +x msfinstall
-    sudo ./msfinstall
+    sudo ./msfinstall && log_ok "Metasploit" || log_fail "Metasploit"
     rm msfinstall
 fi
 
 # =============================
 # scrcpy
 # =============================
-log "Instalando scrcpy actualizado desde GitHub..."
+log_info "Instalando scrcpy..."
 if command -v scrcpy &> /dev/null; then
-    log "scrcpy ya está instalado, saltando compilación..."
+    log_ok "scrcpy"
 else
     sudo apt install -y ffmpeg libsdl2-2.0-0 adb wget \
         gcc git pkg-config meson ninja-build libsdl2-dev \
@@ -187,12 +227,13 @@ else
     ./install_release.sh
     cd ~
     rm -rf /tmp/scrcpy
+    log_ok "scrcpy"
 fi
 
 # =============================
 # Alias
 # =============================
-log "Añadiendo alias útiles a ~/.bashrc ..."
+log_info "Añadiendo alias..."
 if ! grep -q "# ====== HACKING ALIASES ======" ~/.bashrc; then
 cat <<EOF >> ~/.bashrc
 
@@ -205,47 +246,123 @@ alias scr='scrcpy --max-fps 30 --turn-screen-off'
 EOF
 fi
 
-log "Aplicando alias..."
 source ~/.bashrc || true
+log_ok "alias añadidos"
 
 # =============================
-# LISTA DE VERIFICACIÓN FINAL
+# VERIFICACIÓN POST-INSTALACIÓN (CENTRADA)
 # =============================
-echo ""
-echo "==============================="
-echo "🧾 LISTA FINAL DE HERRAMIENTAS"
-echo "==============================="
 
-check_tool wfuzz "Wfuzz"
-check_tool gobuster "Gobuster"
-check_tool hashcat "Hashcat"
-check_tool john "John the Ripper"
-check_tool nmap "Nmap"
-check_tool wireshark "Wireshark"
-check_tool nikto "Nikto"
-check_tool sqlmap "SQLMap"
-check_tool tcpdump "TCPDump"
-check_tool hydra "Hydra"
-check_tool dirb "Dirb"
-check_tool dnsenum "Dnsenum"
-check_tool adb "ADB (Android Debug Bridge)"
-check_tool scrcpy "scrcpy (control de Android)"
-check_tool msfconsole "Metasploit Framework"
-check_tool jq "jq (JSON parser)"
-check_tool exiftool "Exiftool (metadatos)"
-check_tool whatweb "Whatweb"
-check_tool aircrack-ng "Aircrack-ng"
-check_tool hcxdumptool "HCXDumpTool"
-check_hcxtools
-check_tool binwalk "Binwalk"
-check_tool crackmapexec "CrackMapExec"
-check_tool evil-winrm "Evil-WinRM"
-check_tool wpscan "Wpscan"
-check_tool sherlock "Sherlock"
+# Colores
+GREEN="\e[32m"
+RED="\e[31m"
+YELLOW="\e[33m"
+BLUE="\e[34m"
+BOLD="\e[1m"
+NC="\e[0m"
 
-[ -f "$ROCKYOU_PATH" ] && log "rockyou.txt disponible en $ROCKYOU_PATH" || error "rockyou.txt faltante"
-[ -d "$SECLISTS_DIR" ] && log "SecLists instalado en $SECLISTS_DIR" || error "SecLists faltante"
+# Terminal y caja
+TERM_WIDTH=$(tput cols)
+[ "$TERM_WIDTH" -lt 60 ] && TERM_WIDTH=60
+BOX_WIDTH=60
 
-echo ""
-log "¡Tu entorno está listo, kr1pt0n!"
-warn "Reinicia tu sesión para aplicar los permisos de Wireshark correctamente."
+# Funciones de impresión
+print_border() {
+    local padding=$(( (TERM_WIDTH - BOX_WIDTH) / 2 ))
+    printf "%*s" "$padding" ""
+    printf '%b' "$BLUE"
+    printf '=%.0s' $(seq 1 $BOX_WIDTH)
+    printf '%b\n' "$NC"
+}
+
+print_centered() {
+    local text="$1"
+    local color="${2:-$NC}"
+    local padding=$(( (BOX_WIDTH - ${#text}) / 2 ))
+    local margin=$(( (TERM_WIDTH - BOX_WIDTH) / 2 ))
+
+    printf "%*s" "$margin" ""
+    printf "%b%*s%s%*s%b\n" "$color" "$padding" "" "$text" "$padding" "" "$NC"
+}
+
+# Verificación de herramientas
+progress_bar() {
+    local tool="$1"
+    local display="$2"
+    local duration=20
+    local bar=""
+
+    for i in $(seq 1 $duration); do
+        sleep 0.01
+        bar+="#"
+    done
+
+    local status
+    if command -v "$tool" &> /dev/null || \
+       { [ "$tool" = "rockyou.txt" ] && [ -f "$ROCKYOU_PATH" ]; } || \
+       { [ "$tool" = "SecLists" ] && [ -d "$SECLISTS_DIR" ]; }; then
+        status="${GREEN}✔ OK${NC}"
+    else
+        status="${RED}✘ FAIL${NC}"
+    fi
+
+    local margin=$(( (TERM_WIDTH - BOX_WIDTH) / 2 ))
+    printf "%*s" "$margin" ""
+    printf "[+] %-24s : [%-20s] %b\n" "$display" "$bar" "$status"
+}
+
+# =============================
+# TÍTULO
+# =============================
+clear
+print_border
+print_centered "🔍 VERIFICACIÓN POST-INSTALACIÓN" "$BOLD$BLUE"
+print_border
+
+# =============================
+# LISTA DE HERRAMIENTAS
+# =============================
+tools=(
+    "wfuzz Wfuzz"
+    "gobuster Gobuster"
+    "hashcat Hashcat"
+    "john John"
+    "nmap Nmap"
+    "wireshark Wireshark"
+    "nikto Nikto"
+    "sqlmap SQLMap"
+    "tcpdump TCPDump"
+    "hydra Hydra"
+    "dirb Dirb"
+    "dnsenum Dnsenum"
+    "adb ADB"
+    "scrcpy scrcpy"
+    "msfconsole Metasploit"
+    "jq jq"
+    "exiftool Exiftool"
+    "whatweb Whatweb"
+    "aircrack-ng Aircrack-ng"
+    "hcxdumptool HCXDumpTool"
+    "hcxpcapngtool hcxtools"
+    "binwalk Binwalk"
+    "crackmapexec CrackMapExec"
+    "evil-winrm Evil-WinRM"
+    "wpscan Wpscan"
+    "sherlock Sherlock"
+    "rockyou.txt rockyou.txt"
+    "SecLists SecLists"
+)
+
+for t in "${tools[@]}"; do
+    tool_name=$(echo $t | awk '{print $1}')
+    display_name=$(echo $t | cut -d' ' -f2-)
+    progress_bar "$tool_name" "$display_name"
+done
+
+# =============================
+# MENSAJE FINAL
+# =============================
+print_border
+print_centered "¡Tu entorno está listo-HappyHacking! ✔" "$BOLD$GREEN"
+print_centered "Reinicia tu sesión para aplicar permisos de Wireshark." "$BOLD$YELLOW"
+print_border
