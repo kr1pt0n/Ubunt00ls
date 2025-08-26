@@ -52,6 +52,15 @@ check_tool() {
     fi
 }
 
+check_hcxtools() {
+    if command -v hcxpcapngtool &> /dev/null || \
+       command -v hcxhashtool &> /dev/null; then
+        log "hcxtools instalado correctamente"
+    else
+        error "hcxtools no se detectó correctamente"
+    fi
+}
+
 # =============================
 # INICIO DE INSTALACIÓN
 # =============================
@@ -92,83 +101,35 @@ install_if_missing binwalk binwalk
 install_if_missing sherlock sherlock
 
 # =============================
-# Instalar Burp Suite Community
+# Ruby + Gems (Evil-WinRM & Wpscan)
 # =============================
-log "Iniciando instalación de Burp Suite Community..."
+log "Instalando Ruby y dependencias..."
+install_if_missing gem ruby-rubygems
+install_if_missing ruby-dev ruby-dev
 
-# Ejecutamos el script de Python desde el bash para obtener y descargar Burp Suite
-python3 <<'EOF'
-import requests
-import re
-import os
-import stat
-import subprocess
+log "Instalando Evil-WinRM con gem..."
+if gem list -i evil-winrm &> /dev/null; then
+    log "evil-winrm ya está instalado."
+else
+    sudo gem install evil-winrm
+fi
 
-def extraer_ultima_version_comunidad_linux():
-    url = "https://portswigger.net/burp/releases/community/latest"
-    response = requests.get(url)
-    
-    if response.status_code != 200:
-        print("Error al obtener la página.")
-        return None
-    
-    html = response.text
-    
-    version_match = re.search(r'Professional / Community (\d+\.\d+\.\d+)', html)
-    if not version_match:
-        print("No se encontró la versión en la página.")
-        return None
-    
-    version = version_match.group(1)
-    print(f"Versión detectada: {version}")
-    
-    download_url = f"https://portswigger.net/burp/releases/download?product=community&version={version}&type=Linux"
-    
-    return version, download_url
-
-def descargar_burpsuite_linux(url, version):
-    file_name = f"burpsuite_community_linux_v{version}_64.sh"
-    
-    print(f"Descargando desde: {url}")
-    
-    with requests.get(url, stream=True) as r:
-        if r.status_code != 200:
-            print(f"Error al descargar: Status code {r.status_code}")
-            return None
-        
-        with open(file_name, "wb") as f:
-            for chunk in r.iter_content(chunk_size=8192):
-                f.write(chunk)
-    
-    print(f"Archivo descargado: {file_name}")
-    return file_name
-
-def dar_permisos_ejecucion(file_path):
-    st = os.stat(file_path)
-    os.chmod(file_path, st.st_mode | stat.S_IEXEC)
-    print(f"Permisos de ejecución asignados a: {file_path}")
-
-def ejecutar_instalador_con_sudo(file_path):
-    print(f"Ejecutando instalador con sudo: {file_path}")
-    try:
-        subprocess.run(["sudo", f"./{file_path}"], check=True)
-    except subprocess.CalledProcessError as e:
-        print(f"Error al ejecutar el instalador: {e}")
-
-if __name__ == "__main__":
-    resultado = extraer_ultima_version_comunidad_linux()
-    if resultado:
-        version, url_descarga = resultado
-        archivo = descargar_burpsuite_linux(url_descarga, version)
-        if archivo:
-            dar_permisos_ejecucion(archivo)
-            ejecutar_instalador_con_sudo(archivo)
-EOF
+log "Instalando Wpscan con gem..."
+if gem list -i wpscan &> /dev/null; then
+    log "wpscan ya está instalado."
+else
+    sudo gem install wpscan
+fi
 
 # =============================
-# Listo
+# CrackMapExec con Snap
 # =============================
-log "Instalación completada."
+log "Instalando CrackMapExec con snap..."
+if command -v crackmapexec &> /dev/null; then
+    log "CrackMapExec ya está instalado."
+else
+    sudo snap install crackmapexec
+fi
 
 # =============================
 # SecLists + Rockyou
@@ -195,13 +156,96 @@ else
     log "rockyou.txt descargado en $ROCKYOU_PATH"
 fi
 
-# Resto del script para otras herramientas...
-# ...
+# =============================
+# Metasploit
+# =============================
+log "Instalando Metasploit Framework..."
+if command -v msfconsole &> /dev/null; then
+    log "Metasploit ya está instalado, saltando..."
+else
+    curl -s https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb > msfinstall
+    chmod +x msfinstall
+    sudo ./msfinstall
+    rm msfinstall
+fi
 
 # =============================
-# Lista de verificación
+# scrcpy
 # =============================
-echo "Verificando herramientas instaladas..."
-check_tool burpsuite "Burp Suite"
+log "Instalando scrcpy actualizado desde GitHub..."
+if command -v scrcpy &> /dev/null; then
+    log "scrcpy ya está instalado, saltando compilación..."
+else
+    sudo apt install -y ffmpeg libsdl2-2.0-0 adb wget \
+        gcc git pkg-config meson ninja-build libsdl2-dev \
+        libavcodec-dev libavdevice-dev libavformat-dev libavutil-dev \
+        libswresample-dev libusb-1.0-0 libusb-1.0-0-dev
 
-# Fin
+    rm -rf /tmp/scrcpy
+    git clone https://github.com/Genymobile/scrcpy /tmp/scrcpy
+    cd /tmp/scrcpy
+    ./install_release.sh
+    cd ~
+    rm -rf /tmp/scrcpy
+fi
+
+# =============================
+# Alias
+# =============================
+log "Añadiendo alias útiles a ~/.bashrc ..."
+if ! grep -q "# ====== HACKING ALIASES ======" ~/.bashrc; then
+cat <<EOF >> ~/.bashrc
+
+# ====== HACKING ALIASES ======
+alias rockyou='$ROCKYOU_PATH'
+alias seclists='cd $SECLISTS_DIR'
+alias msf='msfconsole'
+alias aconnect='adb connect 127.0.0.1:5555'
+alias scr='scrcpy --max-fps 30 --turn-screen-off'
+EOF
+fi
+
+log "Aplicando alias..."
+source ~/.bashrc || true
+
+# =============================
+# LISTA DE VERIFICACIÓN FINAL
+# =============================
+echo ""
+echo "==============================="
+echo "🧾 LISTA FINAL DE HERRAMIENTAS"
+echo "==============================="
+
+check_tool wfuzz "Wfuzz"
+check_tool gobuster "Gobuster"
+check_tool hashcat "Hashcat"
+check_tool john "John the Ripper"
+check_tool nmap "Nmap"
+check_tool wireshark "Wireshark"
+check_tool nikto "Nikto"
+check_tool sqlmap "SQLMap"
+check_tool tcpdump "TCPDump"
+check_tool hydra "Hydra"
+check_tool dirb "Dirb"
+check_tool dnsenum "Dnsenum"
+check_tool adb "ADB (Android Debug Bridge)"
+check_tool scrcpy "scrcpy (control de Android)"
+check_tool msfconsole "Metasploit Framework"
+check_tool jq "jq (JSON parser)"
+check_tool exiftool "Exiftool (metadatos)"
+check_tool whatweb "Whatweb"
+check_tool aircrack-ng "Aircrack-ng"
+check_tool hcxdumptool "HCXDumpTool"
+check_hcxtools
+check_tool binwalk "Binwalk"
+check_tool crackmapexec "CrackMapExec"
+check_tool evil-winrm "Evil-WinRM"
+check_tool wpscan "Wpscan"
+check_tool sherlock "Sherlock"
+
+[ -f "$ROCKYOU_PATH" ] && log "rockyou.txt disponible en $ROCKYOU_PATH" || error "rockyou.txt faltante"
+[ -d "$SECLISTS_DIR" ] && log "SecLists instalado en $SECLISTS_DIR" || error "SecLists faltante"
+
+echo ""
+log "¡Tu entorno está listo, kr1pt0n!"
+warn "Reinicia tu sesión para aplicar los permisos de Wireshark correctamente."
