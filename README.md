@@ -18,7 +18,7 @@ Script en **bash** que automatiza la instalación de un kit de herramientas de p
 🚀 Instalación rápida
 ```bash 
 git clone https://github.com/kr1pt0n/Ubunt00ls.git
-cd Ubunt00ls`
+cd Ubunt00ls
 chmod +x t00ls.sh
 sudo ./t00ls.sh
 ```
