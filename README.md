@@ -12,8 +12,9 @@ Script en **bash** que automatiza la instalación de un kit de herramientas de p
 - Conexión a internet estable
 - Usuario con privilegios `sudo`
 - Paquetes base:
-  ```bash
-  sudo apt update && sudo apt install -y git curl ca-certificates
+```bash
+sudo apt update && sudo apt install -y git curl ca-certificates
+```
 
 🚀 Instalación rápida
 ```bash 
