@@ -15,6 +15,13 @@ Script en **bash** que automatiza la instalación de un kit de herramientas de p
   ```bash
   sudo apt update && sudo apt install -y git curl ca-certificates
 
+🚀 Instalación rápida
+´´´bash 
+git clone https://github.com/kr1pt0n/Ubunt00ls.git
+cd Ubunt00ls
+chmod +x t00ls.sh
+sudo ./t00ls.sh
+
 Ubuntu ofrece un equilibrio perfecto entre robustez, facilidad de uso y un ecosistema ampliamente soportado, lo que garantiza que el sistema operativo funcione de manera fluida y sin interrupciones, ideal para desarrollar y ejecutar herramientas sin complicaciones.
 
 Por esta razón, les presento mi script de las herramientas mas usadas, totalmente compatibles para Ubuntu 24.04, aprovechando su estabilidad y la capacidad de mantener un entorno confiable para cualquier proyecto o tarea técnica.
