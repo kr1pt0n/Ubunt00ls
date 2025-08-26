@@ -1,4 +1,19 @@
-# Ubunt00ls
+# Ubunt00ls — Instalador de herramientas de Pentesting para Ubuntu
+
+Script en **bash** que automatiza la instalación de un kit de herramientas de pentesting y networking en **Ubuntu 24.04 LTS**.
+
+> ⚠️ **Aviso legal:** Usa estas herramientas únicamente en entornos propios o con permiso explícito. El uso indebido puede ser ilegal.
+
+---
+
+## ✅ Requisitos
+
+- Ubuntu 24.04 LTS (recomendado)
+- Conexión a internet estable
+- Usuario con privilegios `sudo`
+- Paquetes base:
+  ```bash
+  sudo apt update && sudo apt install -y git curl ca-certificates
 
 Ubuntu ofrece un equilibrio perfecto entre robustez, facilidad de uso y un ecosistema ampliamente soportado, lo que garantiza que el sistema operativo funcione de manera fluida y sin interrupciones, ideal para desarrollar y ejecutar herramientas sin complicaciones.
 
@@ -6,6 +21,8 @@ Por esta razón, les presento mi script de las herramientas mas usadas, totalmen
 
 Este script automatiza la instalación de varias herramientas desde sus fuentes oficiales, esenciales para pentesting en la ultima versions LTS de Ubuntu (24.04). 
 (Cumple con todas sus dependencias en Ubuntu 24.04)
+
+
 
 ## 🔧 Herramientas de Hacking y Seguridad
 
