@@ -20,7 +20,7 @@ Script en **bash** que automatiza la instalación de un kit de herramientas de p
 git clone https://github.com/kr1pt0n/Ubunt00ls.git
 cd Ubunt00ls
 chmod +x t00ls.sh
-sudo ./t00ls.sh
+./t00ls.sh
 ```
 
 Ubuntu ofrece un equilibrio perfecto entre robustez, facilidad de uso y un ecosistema ampliamente soportado, lo que garantiza que el sistema operativo funcione de manera fluida y sin interrupciones, ideal para desarrollar y ejecutar herramientas sin complicaciones.
