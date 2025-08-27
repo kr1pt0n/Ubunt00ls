@@ -89,3 +89,8 @@ Este script automatiza la instalación de varias herramientas desde sus fuentes 
 |-----------------|-------------|----------------|
 | **sherlock**    | Búsqueda de usuarios en redes sociales | [Sherlock](https://github.com/sherlock-project/sherlock) |
 | **binwalk**     | Análisis y extracción de firmware | [Binwalk](https://github.com/ReFirmLabs/binwalk) |
+
+## Exploits y Vulnerabilidades
+| Herramienta     | Descripción | Enlace Oficial |
+|-----------------|-------------|----------------|
+| exploit-db      | Base de datos de exploits y vulnerabilidades | [Exploit-DB](https://www.exploit-db.com/) |
