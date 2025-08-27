@@ -5,7 +5,7 @@ set -e  # Detener el script si hay un error crítico
 # VALIDACIÓN DE EJECUCIÓN
 # =============================
 if [ "$EUID" -eq 0 ]; then
-    echo "[X] No ejecutes este script como root. Usa: bash $0"
+    echo "❌ No ejecutes este script como root. Usa: bash $0"
     exit 1
 fi
 
@@ -250,6 +250,57 @@ source ~/.bashrc || true
 log_ok "alias añadidos"
 
 # =============================
+# EXPLOIT-DB / SEARCHSPLOIT + SHELLCODES
+# =============================
+log_info "Instalando Exploit-DB (Searchsploit) y Shellcodes..."
+
+REPOS=( "exploitdb" "exploitdb-papers" )
+for repo in "${REPOS[@]}"; do
+    INSTALL_DIR="/opt/$repo"
+    if [ -d "$INSTALL_DIR" ]; then
+        log_info "$repo ya existe, ajustando permisos..."
+    else
+        log_info "Clonando $repo..."
+        sudo git clone "https://gitlab.com/exploit-database/$repo.git" "$INSTALL_DIR" &>/dev/null \
+            && log_ok "$repo" || log_fail "$repo"
+    fi
+
+    # Ajustar propiedad al usuario actual
+    sudo chown -R "$USER:$USER" "$INSTALL_DIR"
+    log_info "Propietario de $repo ajustado a $USER"
+
+    # Marcar safe.directory en Git
+    git config --global --add safe.directory "$INSTALL_DIR"
+done
+
+# Crear enlace simbólico searchsploit si no existe
+if [ -L "/usr/local/bin/searchsploit" ]; then
+    log_ok "Enlace searchsploit"
+else
+    sudo ln -sf /opt/exploitdb/searchsploit /usr/local/bin/searchsploit \
+        && log_ok "Enlace searchsploit" || log_fail "Enlace searchsploit"
+fi
+
+# Eliminar .searchsploit_rc si existe
+RC_FILE="$HOME/.searchsploit_rc"
+if [ -f "$RC_FILE" ]; then
+    rm "$RC_FILE"
+    log_info "Archivo .searchsploit_rc eliminado"
+fi
+
+# Crear directorio de shellcodes si no existe
+SHELLCODE_DIR="/opt/exploitdb/shellcodes"
+if [ -d "$SHELLCODE_DIR" ]; then
+    log_ok "Shellcodes ya disponibles"
+else
+    mkdir -p "$SHELLCODE_DIR" && log_ok "Directorio Shellcodes creado"
+fi
+
+# Actualizar base de datos de exploits y shellcodes
+log_info "Actualizando base de datos de exploits y shellcodes..."
+searchsploit -u &>/dev/null && log_ok "Base de exploits y shellcodes actualizada" || log_fail "Actualización fallida"
+
+# =============================
 # VERIFICACIÓN POST-INSTALACIÓN (CENTRADA)
 # =============================
 
@@ -364,6 +415,7 @@ tools=(
     "sherlock Sherlock"
     "rockyou.txt rockyou.txt"
     "SecLists SecLists"
+    "searchsploit Exploit-DB"
 )
 
 for t in "${tools[@]}"; do
@@ -379,4 +431,3 @@ print_border
 print_centered "¡Tu entorno está listo-HappyHacking! ✔" "$BOLD$GREEN"
 print_centered "Reinicia tu sesión para aplicar permisos de Wireshark." "$BOLD$YELLOW"
 print_border
-
