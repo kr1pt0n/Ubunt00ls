@@ -5,7 +5,7 @@ set -e  # Detener el script si hay un error crítico
 # VALIDACIÓN DE EJECUCIÓN
 # =============================
 if [ "$EUID" -eq 0 ]; then
-    echo "❌ No ejecutes este script como root. Usa: bash $0"
+    echo "[X] No ejecutes este script como root. Usa: bash $0"
     exit 1
 fi
 
