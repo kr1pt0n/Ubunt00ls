@@ -1,6 +1,6 @@
 # Ubunt00ls — Instalador de herramientas de Pentesting para Ubuntu
 ![N|Solid](https://www-file.huawei.com/admin/asset/v1/pro/view/501c611b6f92446c9a990b166d1ff90a.jpg)
-Script en **bash** que automatiza la instalación de un kit de herramientas de pentesting y networking en **Ubuntu 24.04 LTS**.
+Script en **bash** que automatiza la instalación de un kit de herramientas de pentesting y networking en **Ubuntu/Debian**.
 
 >  **Aviso legal:** Usa estas herramientas únicamente en entornos propios o con permiso explícito. El uso indebido puede ser ilegal.
 
@@ -8,7 +8,6 @@ Script en **bash** que automatiza la instalación de un kit de herramientas de p
 
 ##  Requisitos
 
-- Ubuntu 24.04 LTS (recomendado)
 - Conexión a internet estable
 - Usuario con privilegios `sudo`
 - Paquetes base:
