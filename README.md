@@ -2,11 +2,11 @@
 [![N|Solid](https://www-file.huawei.com/admin/asset/v1/pro/view/501c611b6f92446c9a990b166d1ff90a.jpg)]
 Script en **bash** que automatiza la instalación de un kit de herramientas de pentesting y networking en **Ubuntu 24.04 LTS**.
 
-> ⚠️ **Aviso legal:** Usa estas herramientas únicamente en entornos propios o con permiso explícito. El uso indebido puede ser ilegal.
+>  **Aviso legal:** Usa estas herramientas únicamente en entornos propios o con permiso explícito. El uso indebido puede ser ilegal.
 
 ---
 
-## ✅ Requisitos
+##  Requisitos
 
 - Ubuntu 24.04 LTS (recomendado)
 - Conexión a internet estable
@@ -16,7 +16,7 @@ Script en **bash** que automatiza la instalación de un kit de herramientas de p
 sudo apt update && sudo apt install -y git curl ca-certificates
 ```
 
-🚀 Instalación rápida
+Instalación rápida
 ```bash 
 git clone https://github.com/kr1pt0n/Ubunt00ls.git
 cd Ubunt00ls
@@ -33,9 +33,9 @@ Este script automatiza la instalación de varias herramientas desde sus fuentes 
 
 
 
-## 🔧 Herramientas de Hacking y Seguridad
+## Herramientas de Hacking y Seguridad
 
-### 🌐 Web Hacking
+### Web Hacking
 | Herramienta     | Descripción | Enlace Oficial |
 |-----------------|-------------|----------------|
 | **wfuzz**       | Fuzzer para aplicaciones web | [WFuzz](https://github.com/xmendez/wfuzz) |
@@ -47,7 +47,7 @@ Este script automatiza la instalación de varias herramientas desde sus fuentes 
 
 ---
 
-### 📡 Redes y Análisis de Tráfico
+### Redes y Análisis de Tráfico
 | Herramienta     | Descripción | Enlace Oficial |
 |-----------------|-------------|----------------|
 | **nmap**        | Escáner de red y puertos | [Nmap](https://nmap.org/) |
@@ -58,7 +58,7 @@ Este script automatiza la instalación de varias herramientas desde sus fuentes 
 
 ---
 
-### 🔑 Cracking y Fuerza Bruta
+### Cracking y Fuerza Bruta
 | Herramienta     | Descripción | Enlace Oficial |
 |-----------------|-------------|----------------|
 | **hashcat**     | Cracker avanzado de contraseñas por GPU | [Hashcat](https://hashcat.net/hashcat/) |
@@ -67,7 +67,7 @@ Este script automatiza la instalación de varias herramientas desde sus fuentes 
 
 ---
 
-### 📶 WiFi Hacking
+### WiFi Hacking
 | Herramienta     | Descripción | Enlace Oficial |
 |-----------------|-------------|----------------|
 | **aircrack-ng** | Cracking de WiFi (WEP/WPA/WPA2) | [Aircrack-ng](https://www.aircrack-ng.org/) |
@@ -76,7 +76,7 @@ Este script automatiza la instalación de varias herramientas desde sus fuentes 
 
 ---
 
-### 📱 Android & Mobile
+### Android & Mobile
 | Herramienta     | Descripción | Enlace Oficial |
 |-----------------|-------------|----------------|
 | **adb**         | Herramienta de depuración para Android | [ADB](https://developer.android.com/studio/command-line/adb) |
@@ -84,7 +84,7 @@ Este script automatiza la instalación de varias herramientas desde sus fuentes 
 
 ---
 
-### 🔍 OSINT & Forense
+### OSINT & Forense
 | Herramienta     | Descripción | Enlace Oficial |
 |-----------------|-------------|----------------|
 | **sherlock**    | Búsqueda de usuarios en redes sociales | [Sherlock](https://github.com/sherlock-project/sherlock) |
