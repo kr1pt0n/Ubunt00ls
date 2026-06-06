@@ -5,16 +5,6 @@ Script en **bash** que automatiza la instalación de un kit de herramientas de p
 >  **Aviso legal:** Usa estas herramientas únicamente en entornos propios o con permiso explícito. El uso indebido puede ser ilegal.
 
 ---
-
-##  Requisitos
-
-- Conexión a internet estable
-- Usuario con privilegios `sudo`
-- Paquetes base:
-```bash
-sudo apt update && sudo apt install -y git curl ca-certificates
-```
-
 Instalación rápida
 ```bash 
 git clone https://github.com/kr1pt0n/Ubunt00ls.git
