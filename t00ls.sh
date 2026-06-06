@@ -22,8 +22,7 @@ BLUE="\e[34m"
 BOLD="\e[1m"
 NC="\e[0m"
 
-# Delay para no parecer robot
-DELAY=0.2
+DELAY=0.1
 
 # =============================
 # BANNER UBUNT00L$
@@ -37,7 +36,7 @@ cat << "EOF"
    | \_ / `;=/ " \=;` \ _/ | 
     \/ `\__|`\___/`|__/`  \/ 
          \(/|\)/       
-        ubunt00l$
+         ubunt00l$
 
 EOF
 echo -e "${NC}"
@@ -45,18 +44,10 @@ echo -e "${NC}"
 # =============================
 # LOGGING ESTÉTICO
 # =============================
-log_ok() {
-    printf "%-35s [%b✔ OK%b]\n" "$1" "${GREEN}${BOLD}" "${NC}"
-}
-log_fail() {
-    printf "%-35s [%b✘ FAIL%b]\n" "$1" "${RED}${BOLD}" "${NC}"
-}
-log_info() {
-    printf "%-35s [%b* INFO%b]\n" "$1" "${BLUE}" "${NC}"
-}
-log_warn() {
-    printf "%-35s [%b! WARN%b]\n" "$1" "${YELLOW}" "${NC}"
-}
+log_ok() { printf "%-35s [%b✔ OK%b]\n" "$1" "${GREEN}${BOLD}" "${NC}"; }
+log_fail() { printf "%-35s [%b✘ FAIL%b]\n" "$1" "${RED}${BOLD}" "${NC}"; }
+log_info() { printf "%-35s [%b* INFO%b]\n" "$1" "${BLUE}" "${NC}"; }
+log_warn() { printf "%-35s [%b! WARN%b]\n" "$1" "${YELLOW}" "${NC}"; }
 
 # =============================
 # FUNCIONES AUXILIARES
@@ -69,36 +60,18 @@ install_if_missing() {
     else
         log_info "$pkg instalando..."
         sleep $DELAY
-        if sudo apt install -y "$pkg" &>/dev/null; then
+        if sudo apt install -y "$pkg"; then
             log_ok "$pkg"
         else
             log_fail "$pkg"
+            exit 1
         fi
     fi
     sleep $DELAY
 }
 
-check_tool() {
-    local cmd="$1"
-    local name="$2"
-    if command -v "$cmd" &> /dev/null; then
-        log_ok "$name"
-    else
-        log_fail "$name"
-    fi
-}
-
-check_hcxtools() {
-    if command -v hcxpcapngtool &> /dev/null || \
-       command -v hcxhashtool &> /dev/null; then
-        log_ok "hcxtools"
-    else
-        log_fail "hcxtools"
-    fi
-}
-
 # =============================
-# INICIO DE INSTALACIÓN
+# INICIO DE INSTALACIÓN DE COMPONENTES BASE
 # =============================
 log_info "Actualizando lista de paquetes..."
 sudo apt update -y
@@ -113,8 +86,24 @@ install_if_missing unzip unzip
 install_if_missing jq jq
 install_if_missing exiftool exiftool
 
-log_info "Instalando herramientas de pentesting..."
-install_if_missing wfuzz wfuzz
+# Configuración del entorno global del PATH
+log_info "Configurando variables de entorno permanentes..."
+if ! grep -q "# ====== ENVIROMENT PATHS ======" ~/.bashrc; then
+cat << 'EOF' >> ~/.bashrc
+
+# ====== ENVIROMENT PATHS ======
+export PATH="$HOME/.local/bin:$HOME/go/bin:/opt/enum4linux-ng:$PATH"
+export PYO3_USE_ABI3_FORWARD_COMPATIBILITY=1
+EOF
+fi
+export PATH="$HOME/.local/bin:$HOME/go/bin:/opt/enum4linux-ng:$PATH"
+export PYO3_USE_ABI3_FORWARD_COMPATIBILITY=1
+
+log_info "Instalando dependencias base (APT y Lenguajes)..."
+sudo apt install -y pipx git rustc cargo build-essential python3-dev libffi-dev golang libpcap-dev python3-impacket
+pipx ensurepath
+
+log_info "Instalando herramientas de pentesting (APT)..."
 install_if_missing gobuster gobuster
 install_if_missing hashcat hashcat
 install_if_missing john john
@@ -125,15 +114,90 @@ install_if_missing sqlmap sqlmap
 install_if_missing ifconfig net-tools
 install_if_missing tcpdump tcpdump
 install_if_missing hydra hydra
-install_if_missing dirb dirb
-install_if_missing dnsenum dnsenum
 install_if_missing adb adb
 install_if_missing whatweb whatweb
 install_if_missing aircrack-ng aircrack-ng
-install_if_missing hcxtools hcxtools
-install_if_missing hcxdumptool hcxdumptool
 install_if_missing binwalk binwalk
-install_if_missing sherlock sherlock
+install_if_missing smbclient smbclient
+install_if_missing sqlite3 sqlite3
+install_if_missing medusa medusa
+
+# Java JDK Estable
+log_info "Instalando Java JDK..."
+install_if_missing java default-jdk
+
+# PostgreSQL
+log_info "Instalando PostgreSQL..."
+install_if_missing psql postgresql
+
+# =============================
+# COMPILACIÓN MANUAL DE SCRCPY (MÉTODO OPTIMIZADO)
+# =============================
+log_info "Instalando dependencias de compilación para Scrcpy..."
+sudo apt install -y ffmpeg libsdl3-0 libusb-1.0-0 adb wget \
+                    gcc git pkg-config meson ninja-build libsdl3-dev \
+                    libavcodec-dev libavdevice-dev libavformat-dev libavutil-dev \
+                    libswresample-dev libusb-1.0-0-dev libv4l-dev
+
+log_info "Compilando e instalando Scrcpy desde código fuente..."
+if command -v scrcpy &>/dev/null; then
+    log_ok "Scrcpy (Ya instalado)"
+else
+    rm -rf /tmp/scrcpy
+    git clone https://github.com/Genymobile/scrcpy /tmp/scrcpy
+    cd /tmp/scrcpy
+    ./install_release.sh
+    cd ~
+    rm -rf /tmp/scrcpy
+    log_ok "Scrcpy (Compilado)"
+fi
+
+# Herramientas vía Snaps
+log_info "Instalando herramientas vía Snap..."
+for snap_pkg in rustscan feroxbuster amass httpx; do
+    if command -v "$snap_pkg" &> /dev/null || [ -f "/snap/bin/$snap_pkg" ]; then
+        log_ok "$snap_pkg"
+    else
+        sudo snap install "$snap_pkg" &>/dev/null && log_ok "$snap_pkg" || log_fail "$snap_pkg"
+    fi
+done
+
+# Herramientas vía PIPX
+log_info "Instalando herramientas vía PIPX..."
+
+if command -v nxc &>/dev/null; then
+    log_ok "NetExec"
+else
+    pipx install git+https://github.com/Pennyw0rth/NetExec && log_ok "NetExec" || log_fail "NetExec"
+fi
+
+if command -v sherlock &>/dev/null; then
+    log_ok "Sherlock"
+else
+    pipx install sherlock-project && log_ok "Sherlock" || log_fail "Sherlock"
+fi
+
+# FFUF con validación estricta
+log_info "Instalando FFUF..."
+if command -v ffuf &> /dev/null; then
+    log_ok "ffuf"
+else
+    FFUF_VERSION=$(curl -s https://api.github.com/repos/ffuf/ffuf/releases/latest | jq -r '.tag_name' | sed 's/v//')
+    wget -q "https://github.com/ffuf/ffuf/releases/download/v${FFUF_VERSION}/ffuf_${FFUF_VERSION}_linux_amd64.tar.gz" -O /tmp/ffuf.tar.gz
+    
+    tar -xzf /tmp/ffuf.tar.gz -C /tmp/
+    sudo mv /tmp/ffuf /usr/local/bin/ffuf
+    rm -f /tmp/ffuf.tar.gz
+    [ -x /usr/local/bin/ffuf ] && log_ok "ffuf" || log_fail "ffuf"
+fi
+
+# CONFIGURACIÓN DE WIRESHARK COMO ROOT EXCLUSIVO
+log_info "Configurando Wireshark para ejecución exclusiva como ROOT..."
+sudo DEBIAN_FRONTEND=noninteractive dpkg-reconfigure wireshark-common &>/dev/null || true
+if [ -f /usr/bin/dumpcap ]; then
+    sudo chown root:root /usr/bin/dumpcap
+    sudo chmod 700 /usr/bin/dumpcap
+fi
 
 # =============================
 # Ruby + Gems (Evil-WinRM & Wpscan)
@@ -146,24 +210,67 @@ log_info "Instalando Evil-WinRM..."
 if gem list -i evil-winrm &> /dev/null; then
     log_ok "evil-winrm"
 else
-    sudo gem install evil-winrm && log_ok "evil-winrm" || log_fail "evil-winrm"
+    sudo gem install evil-winrm &>/dev/null && log_ok "evil-winrm" || log_fail "evil-winrm"
 fi
 
 log_info "Instalando Wpscan..."
 if gem list -i wpscan &> /dev/null; then
     log_ok "wpscan"
 else
-    sudo gem install wpscan && log_ok "wpscan" || log_fail "wpscan"
+    sudo gem install wpscan &>/dev/null && log_ok "wpscan" || log_fail "wpscan"
 fi
 
 # =============================
-# CrackMapExec con Snap
+# Compilaciones manuales / Go / repositorios
 # =============================
-log_info "Instalando CrackMapExec..."
-if command -v crackmapexec &> /dev/null; then
-    log_ok "crackmapexec"
+log_info "Instalando enum4linux-ng..."
+if [ -d "/opt/enum4linux-ng" ]; then
+    sudo chmod +x /opt/enum4linux-ng/enum4linux-ng.py 2>/dev/null || true
+    sudo ln -sf /opt/enum4linux-ng/enum4linux-ng.py /usr/local/bin/enum4linux-ng || true
+    log_ok "enum4linux-ng"
 else
-    sudo snap install crackmapexec && log_ok "crackmapexec" || log_fail "crackmapexec"
+    sudo git clone https://github.com/cddmp/enum4linux-ng /opt/enum4linux-ng &>/dev/null
+    sudo chown -R "$USER:$USER" /opt/enum4linux-ng
+    if [ -f "/opt/enum4linux-ng/enum4linux-ng.py" ]; then
+        sudo chmod +x /opt/enum4linux-ng/enum4linux-ng.py
+        sudo ln -sf /opt/enum4linux-ng/enum4linux-ng.py /usr/local/bin/enum4linux-ng
+        log_ok "enum4linux-ng"
+    else
+        log_fail "enum4linux-ng"
+    fi
+fi
+
+log_info "Instalando Naabu vía Go..."
+if command -v naabu &>/dev/null; then
+    log_ok "Naabu"
+else
+    go install -v github.com/projectdiscovery/naabu/v2/cmd/naabu@latest &>/dev/null && log_ok "Naabu" || log_fail "Naabu"
+fi
+
+log_info "Instalando Subfinder vía Go..."
+if command -v subfinder &>/dev/null; then
+    log_ok "Subfinder"
+else
+    go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest &>/dev/null && log_ok "Subfinder" || log_fail "Subfinder"
+fi
+
+log_info "Compilando e instalando Kerbrute..."
+if command -v kerbrute &>/dev/null; then
+    log_ok "Kerbrute"
+else
+    rm -rf /tmp/kerbrute
+    git clone https://github.com/ropnop/kerbrute.git /tmp/kerbrute &>/dev/null
+    cd /tmp/kerbrute
+    make linux &>/dev/null
+    if [ -f "/tmp/kerbrute/dist/kerbrute_linux_amd64" ]; then
+        sudo cp /tmp/kerbrute/dist/kerbrute_linux_amd64 /usr/bin/kerbrute
+        sudo chmod +x /usr/bin/kerbrute
+        log_ok "Kerbrute"
+    else
+        log_fail "Kerbrute"
+    fi
+    cd ~
+    rm -rf /tmp/kerbrute
 fi
 
 # =============================
@@ -173,24 +280,27 @@ WORDLISTS_DIR="/usr/share/wordlists"
 SECLISTS_DIR="$WORDLISTS_DIR/SecLists"
 ROCKYOU_PATH="$WORDLISTS_DIR/rockyou.txt"
 
-log_info "Instalando SecLists..."
-if [ -d "$SECLISTS_DIR/.git" ]; then
-    log_info "SecLists existe, reseteando..."
-    cd "$SECLISTS_DIR"
-    sudo git fetch --all &>/dev/null
-    sudo git reset --hard origin/master &>/dev/null
+sudo mkdir -p "$WORDLISTS_DIR"
+
+log_info "Instalando SecLists (Método rápido)..."
+if [ -d "$SECLISTS_DIR" ] && [ "$(ls -A $SECLISTS_DIR 2>/dev/null)" ]; then
     log_ok "SecLists"
 else
     sudo rm -rf "$SECLISTS_DIR" 2>/dev/null || true
-    sudo git clone https://github.com/danielmiessler/SecLists.git "$SECLISTS_DIR" &>/dev/null \
-        && log_ok "SecLists" || log_fail "SecLists"
+    sudo mkdir -p "$SECLISTS_DIR"
+    if wget -q https://github.com/danielmiessler/SecLists/archive/master.tar.gz -O /tmp/seclists.tar.gz; then
+        sudo tar -xzf /tmp/seclists.tar.gz -C "$SECLISTS_DIR" --strip-components=1
+        rm -f /tmp/seclists.tar.gz
+        log_ok "SecLists"
+    else
+        log_fail "SecLists"
+    fi
 fi
 
 log_info "Verificando rockyou.txt..."
 if [ -f "$ROCKYOU_PATH" ]; then
     log_ok "rockyou.txt"
 else
-    log_warn "Descargando rockyou.txt..."
     wget -q https://github.com/brannondorsey/naive-hashcat/releases/download/data/rockyou.txt -O /tmp/rockyou.txt
     sudo mv /tmp/rockyou.txt "$ROCKYOU_PATH"
     log_ok "rockyou.txt"
@@ -203,31 +313,10 @@ log_info "Instalando Metasploit..."
 if command -v msfconsole &> /dev/null; then
     log_ok "Metasploit"
 else
-    curl -s https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb > msfinstall
-    chmod +x msfinstall
-    sudo ./msfinstall && log_ok "Metasploit" || log_fail "Metasploit"
-    rm msfinstall
-fi
-
-# =============================
-# scrcpy
-# =============================
-log_info "Instalando scrcpy..."
-if command -v scrcpy &> /dev/null; then
-    log_ok "scrcpy"
-else
-    sudo apt install -y ffmpeg libsdl2-2.0-0 adb wget \
-        gcc git pkg-config meson ninja-build libsdl2-dev \
-        libavcodec-dev libavdevice-dev libavformat-dev libavutil-dev \
-        libswresample-dev libusb-1.0-0 libusb-1.0-0-dev
-
-    rm -rf /tmp/scrcpy
-    git clone https://github.com/Genymobile/scrcpy /tmp/scrcpy
-    cd /tmp/scrcpy
-    ./install_release.sh
-    cd ~
-    rm -rf /tmp/scrcpy
-    log_ok "scrcpy"
+    curl -s https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb > /tmp/msfinstall
+    chmod +x /tmp/msfinstall
+    sudo /tmp/msfinstall && log_ok "Metasploit" || log_fail "Metasploit"
+    rm -f /tmp/msfinstall
 fi
 
 # =============================
@@ -241,87 +330,46 @@ cat <<EOF >> ~/.bashrc
 alias rockyou='$ROCKYOU_PATH'
 alias seclists='cd $SECLISTS_DIR'
 alias msf='msfconsole'
+alias wireshark='sudo wireshark'
 alias aconnect='adb connect 127.0.0.1:5555'
 alias scr='scrcpy --max-fps 30 --turn-screen-off'
 EOF
 fi
-
-source ~/.bashrc || true
 log_ok "alias añadidos"
 
 # =============================
-# EXPLOIT-DB / SEARCHSPLOIT + SHELLCODES
+# EXPLOIT-DB / SEARCHSPLOIT
 # =============================
-log_info "Instalando Exploit-DB (Searchsploit) y Shellcodes..."
-
+log_info "Instalando Exploit-DB (Searchsploit)..."
 REPOS=( "exploitdb" "exploitdb-papers" )
 for repo in "${REPOS[@]}"; do
     INSTALL_DIR="/opt/$repo"
     if [ -d "$INSTALL_DIR" ]; then
-        log_info "$repo ya existe, ajustando permisos..."
+        cd "$INSTALL_DIR" && sudo git pull &>/dev/null || true
     else
-        log_info "Clonando $repo..."
-        sudo git clone "https://gitlab.com/exploit-database/$repo.git" "$INSTALL_DIR" &>/dev/null \
-            && log_ok "$repo" || log_fail "$repo"
+        sudo git clone --depth 1 "https://gitlab.com/exploit-database/$repo.git" "$INSTALL_DIR" &>/dev/null
     fi
-
-    # Ajustar propiedad al usuario actual
     sudo chown -R "$USER:$USER" "$INSTALL_DIR"
-    log_info "Propietario de $repo ajustado a $USER"
-
-    # Marcar safe.directory en Git
-    git config --global --add safe.directory "$INSTALL_DIR"
 done
-
-# Crear enlace simbólico searchsploit si no existe
-if [ -L "/usr/local/bin/searchsploit" ]; then
-    log_ok "Enlace searchsploit"
-else
-    sudo ln -sf /opt/exploitdb/searchsploit /usr/local/bin/searchsploit \
-        && log_ok "Enlace searchsploit" || log_fail "Enlace searchsploit"
+if [ ! -L "/usr/local/bin/searchsploit" ]; then
+    sudo ln -sf /opt/exploitdb/searchsploit /usr/local/bin/searchsploit
 fi
 
-# Eliminar .searchsploit_rc si existe
-RC_FILE="$HOME/.searchsploit_rc"
-if [ -f "$RC_FILE" ]; then
-    rm "$RC_FILE"
-    log_info "Archivo .searchsploit_rc eliminado"
-fi
-
-# Crear directorio de shellcodes si no existe
-SHELLCODE_DIR="/opt/exploitdb/shellcodes"
-if [ -d "$SHELLCODE_DIR" ]; then
-    log_ok "Shellcodes ya disponibles"
-else
-    mkdir -p "$SHELLCODE_DIR" && log_ok "Directorio Shellcodes creado"
-fi
-
-# Actualizar base de datos de exploits y shellcodes
-log_info "Actualizando base de datos de exploits y shellcodes..."
-searchsploit -u &>/dev/null && log_ok "Base de exploits y shellcodes actualizada" || log_fail "Actualización fallida"
+# Docker dependencias pre-bloodhound
+install_if_missing docker docker.io
+install_if_missing "docker compose" docker-compose-v2
+sudo systemctl start docker || true
 
 # =============================
-# VERIFICACIÓN POST-INSTALACIÓN (CENTRADA)
+# TABLA DE VERIFICACIÓN PRE-BLOODHOUND
 # =============================
-
-# Colores
-GREEN="\e[32m"
-RED="\e[31m"
-YELLOW="\e[33m"
-BLUE="\e[34m"
-BOLD="\e[1m"
-NC="\e[0m"
-
-# Terminal y caja
 TERM_WIDTH=$(tput cols)
 [ "$TERM_WIDTH" -lt 60 ] && TERM_WIDTH=60
 BOX_WIDTH=60
 
-# Funciones de impresión
 print_border() {
     local padding=$(( (TERM_WIDTH - BOX_WIDTH) / 2 ))
-    printf "%*s" "$padding" ""
-    printf '%b' "$BLUE"
+    printf "%*s%b" "$padding" "" "$BLUE"
     printf '=%.0s' $(seq 1 $BOX_WIDTH)
     printf '%b\n' "$NC"
 }
@@ -331,91 +379,39 @@ print_centered() {
     local color="${2:-$NC}"
     local padding=$(( (BOX_WIDTH - ${#text}) / 2 ))
     local margin=$(( (TERM_WIDTH - BOX_WIDTH) / 2 ))
-
-    printf "%*s" "$margin" ""
-    printf "%b%*s%s%*s%b\n" "$color" "$padding" "" "$text" "$padding" "" "$NC"
+    printf "%*s%b%*s%s%*s%b\n" "$margin" "" "$color" "$padding" "" "$text" "$padding" "" "$NC"
 }
 
-# Verificación de herramientas
 progress_bar() {
     local tool="$1"
     local display="$2"
-    local duration=20  # longitud de la barra
+    local duration=3
     local margin=$(( (TERM_WIDTH - BOX_WIDTH) / 2 ))
-    local bar=""
-    local percent=0
 
-    # Verificar estado de la herramienta
-    if command -v "$tool" &> /dev/null || \
-       { [ "$tool" = "rockyou.txt" ] && [ -f "$ROCKYOU_PATH" ]; } || \
-       { [ "$tool" = "SecLists" ] && [ -d "$SECLISTS_DIR" ]; }; then
+    if command -v "$tool" &> /dev/null || [ -f "/snap/bin/$tool" ] || [ -f "/usr/local/bin/$tool" ] || [ -d "/opt/$tool" ] || { [ "$tool" = "nxc" ] && command -v nxc &>/dev/null; } || { [ "$tool" = "impacket" ] && python3 -c "import impacket" &>/dev/null; }; then
         status="${GREEN}✔ OK${NC}"
     else
         status="${RED}✘ FAIL${NC}"
     fi
 
-    # Mostrar nombre alineado
-    printf "%*s" "$margin" ""
-    printf "[+] %-22s : [" "$display"
-
-    # Simular carga con porcentaje
-    for i in $(seq 1 $duration); do
-        bar+="#"
-        percent=$(( i * 100 / duration ))
-
-        # Regresar el cursor al inicio de la barra (sin hacer salto de línea)
-        printf "\r"
-        printf "%*s" "$margin" ""
-        printf "[+] %-22s : [${YELLOW}%-20s${NC}] %3d%%" "$display" "$bar" "$percent"
-
-        sleep 0.03
-    done
-
-    # Mostrar estado final (✔ OK o ✘ FAIL)
-    printf "  %b\n" "$status"
+    sleep 0.005
+    printf "%*s[+] %-22s : %b\n" "$margin" "" "$display" "$status"
 }
 
-# =============================
-# TÍTULO
-# =============================
 clear
 print_border
-print_centered "🔍 VERIFICACIÓN POST-INSTALACIÓN" "$BOLD$BLUE"
+print_centered "🔍 VERIFICACIÓN DE ARSENAL ENTORNO BASE" "$BOLD$BLUE"
 print_border
 
-# =============================
-# LISTA DE HERRAMIENTAS
-# =============================
 tools=(
-    "wfuzz Wfuzz"
-    "gobuster Gobuster"
-    "hashcat Hashcat"
-    "john John"
-    "nmap Nmap"
-    "wireshark Wireshark"
-    "nikto Nikto"
-    "sqlmap SQLMap"
-    "tcpdump TCPDump"
-    "hydra Hydra"
-    "dirb Dirb"
-    "dnsenum Dnsenum"
-    "adb ADB"
-    "scrcpy scrcpy"
-    "msfconsole Metasploit"
-    "jq jq"
-    "exiftool Exiftool"
-    "whatweb Whatweb"
-    "aircrack-ng Aircrack-ng"
-    "hcxdumptool HCXDumpTool"
-    "hcxpcapngtool hcxtools"
-    "binwalk Binwalk"
-    "crackmapexec CrackMapExec"
-    "evil-winrm Evil-WinRM"
-    "wpscan Wpscan"
-    "sherlock Sherlock"
-    "rockyou.txt rockyou.txt"
-    "SecLists SecLists"
-    "searchsploit Exploit-DB"
+    "gobuster Gobuster" "ffuf FFUF" "hashcat Hashcat" "john John" "nmap Nmap" 
+    "wireshark Wireshark" "nikto Nikto" "sqlmap SQLMap" "tcpdump TCPDump" "hydra Hydra" 
+    "adb ADB" "msfconsole Metasploit" "jq jq" "exiftool Exiftool" "whatweb Whatweb" 
+    "aircrack-ng Aircrack-ng" "binwalk Binwalk" "evil-winrm Evil-WinRM" "wpscan Wpscan" 
+    "sherlock Sherlock" "smbclient smbclient" "sqlite3 SQLite3" "java Java-JDK" 
+    "psql PostgreSQL" "medusa Medusa" "scrcpy Scrcpy" "nxc NetExec" "impacket Impacket" 
+    "feroxbuster Feroxbuster" "amass Amass" "subfinder Subfinder" "httpx Httpx" 
+    "naabu Naabu" "kerbrute Kerbrute" "enum4linux-ng enum4linux-ng" "rustscan RustScan"
 )
 
 for t in "${tools[@]}"; do
@@ -423,11 +419,42 @@ for t in "${tools[@]}"; do
     display_name=$(echo $t | cut -d' ' -f2-)
     progress_bar "$tool_name" "$display_name"
 done
+print_border
 
 # =============================
-# MENSAJE FINAL
+# DESPLIEGUE FINAL INTERACTIVO: BLOODHOUND CE
 # =============================
-print_border
-print_centered "¡Tu entorno está listo-HappyHacking! ✔" "$BOLD$GREEN"
-print_centered "Reinicia tu sesión para aplicar permisos de Wireshark." "$BOLD$YELLOW"
+echo -e "\n${YELLOW}${BOLD}[*] INICIANDO CONFIGURACIÓN FINAL DE BLOODHOUND CE (DOCKER)...${NC}"
+
+if [ ! -f "/usr/local/bin/bloodhound-ce" ]; then
+    rm -rf /tmp/bloodhound-cli*
+    wget -q https://github.com/SpecterOps/bloodhound-cli/releases/latest/download/bloodhound-cli-linux-amd64.tar.gz -O /tmp/bloodhound-cli-linux-amd64.tar.gz
+    tar -xzf /tmp/bloodhound-cli-linux-amd64.tar.gz -C /tmp/
+    sudo mv /tmp/bloodhound-cli /usr/local/bin/bloodhound-ce
+    sudo chmod +x /usr/local/bin/bloodhound-ce
+    rm -f /tmp/bloodhound-cli-linux-amd64.tar.gz
+fi
+
+echo -e "${BLUE}[+] Desplegando infraestructura e imprimiendo accesos oficiales...${NC}\n"
+
+sudo mkdir -p "$HOME/.config/bloodhound"
+sudo chown -R "$USER:$USER" "$HOME/.config/bloodhound"
+
+sudo bloodhound-ce install
+
+# =============================
+# DOCUMENTACIÓN DE COMANDOS SOLICITADOS
+# =============================
+echo -e "\n${BLUE}${BOLD}======================================================${NC}"
+echo -e "${GREEN}${BOLD}      🛠️  GUÍA DE MANTENIMIENTO DE BLOODHOUND CE      ${NC}"
+echo -e "${BLUE}${BOLD}======================================================${NC}"
+echo -e "${BOLD}Para gestionar tus contenedores usa los siguientes comandos:${NC}"
+echo -e "  ${YELLOW}sudo bloodhound-ce update${NC}   -> Sirve para actualizar los contenedores y las imágenes a la última versión."
+echo -e "  ${YELLOW}sudo bloodhound-ce resetpwd${NC} -> Resetea la contraseña de administración del usuario 'admin' y genera una nueva."
+echo -e "  ${YELLOW}sudo bloodhound-ce down${NC}     -> Apaga el servidor por completo para liberar recursos de tu máquina."
+echo -e "  ${YELLOW}sudo bloodhound-ce up${NC}       -> Vuelve a encender tu servidor con los datos que tenías guardados."
+echo -e "${BLUE}${BOLD}======================================================${NC}\n"
+
+print_centered "¡Auditoría lista - Happy Hacking! ✔" "$BOLD$GREEN"
+print_centered "Para usar Wireshark, Scrcpy o los alias ejecuta: source ~/.bashrc" "$BOLD$YELLOW"
 print_border
