@@ -29,7 +29,7 @@ DELAY=0.1
 # =============================
 log_ok() { printf "[+] %-55s [%b✔ OK%b]\n" "$1" "${GREEN}${BOLD}" "${NC}"; }
 log_fail() { printf "[+] %-55s [%b✘ FAIL%b]\n" "$1" "${RED}${BOLD}" "${NC}"; }
-log_info() { printf "[+] %-55s [%b* INFO%b]\n" "$1" "${BLUE}" "${NC}"; }
+log_info() { printf "[+] %-55s [%bINFO%b]\n" "$1" "${BLUE}" "${NC}"; }
 log_warn() { printf "[+] %-55s [%b! WARN%b]\n" "$1" "${YELLOW}" "${NC}"; }
 
 # =============================
@@ -340,7 +340,7 @@ echo "   /_.''._'--('.')--'_.''._\\ "
 echo "   | \\_ / \`;=/ \" \\=;\` \\ _/ | "
 echo "    \\/ \`\\__|\`\\___/\`|__/\`  \\/ "
 echo "         \\(/|\\)/       "
-echo "         ubunt00l\$"
+echo "         ubunt00l\$ by kr1pt0n"
 echo -e "${NC}"
 
 echo -e "${BOLD}${BLUE}Seleccione los módulos que desea instalar (separados por comas):${NC}\n"
