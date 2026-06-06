@@ -84,7 +84,7 @@ install_if_missing make build-essential
 install_if_missing gpg gnupg2
 install_if_missing unzip unzip
 install_if_missing jq jq
-install_if_missing exiftool exiftool
+install_if_missing exiftool libimage-exiftool-perl
 
 # Configuración del entorno global del PATH
 log_info "Configurando variables de entorno permanentes..."
