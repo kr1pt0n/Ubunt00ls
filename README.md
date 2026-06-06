@@ -30,66 +30,140 @@ Por esta razón, les presento mi script de las herramientas mas usadas, totalmen
 Este script automatiza la instalación de varias herramientas desde sus fuentes oficiales, esenciales para pentesting en la ultima versions LTS de Ubuntu (24.04). 
 (Cumple con todas sus dependencias en Ubuntu 24.04)
 
+# Herramientas de Hacking y Seguridad
 
+## Web Hacking
 
-## Herramientas de Hacking y Seguridad
-
-### Web Hacking
-| Herramienta     | Descripción | Enlace Oficial |
-|-----------------|-------------|----------------|
-| **wfuzz**       | Fuzzer para aplicaciones web | [WFuzz](https://github.com/xmendez/wfuzz) |
-| **gobuster**    | Descubrimiento de directorios y subdominios | [Gobuster](https://github.com/OJ/gobuster) |
-| **nikto**       | Escáner de vulnerabilidades web | [Nikto](https://github.com/sullo/nikto) |
-| **sqlmap**      | Detección y explotación de inyecciones SQL | [SQLMap](https://sqlmap.org/) |
-| **dirb**        | Búsqueda de directorios web por diccionario | [Dirb](https://gitlab.com/kalilinux/packages/dirb) |
-| **whatweb**     | Fingerprinting de tecnologías web | [WhatWeb](https://github.com/urbanadventurer/WhatWeb) |
-
----
-
-### Redes y Análisis de Tráfico
-| Herramienta     | Descripción | Enlace Oficial |
-|-----------------|-------------|----------------|
-| **nmap**        | Escáner de red y puertos | [Nmap](https://nmap.org/) |
-| **wireshark**   | Analizador gráfico de tráfico de red | [Wireshark](https://www.wireshark.org/) |
-| **tcpdump**     | Captura y análisis de tráfico en consola | [Tcpdump](https://www.tcpdump.org/) |
-| **net-tools**   | Utilidades clásicas de red (ifconfig, netstat, etc.) | [Net-tools](https://github.com/ecki/net-tools) |
-| **dnsenum**     | Enumeración de información DNS | [Dnsenum](https://github.com/fwaeytens/dnsenum) |
+| Herramienta     | Descripción                                           | Enlace Oficial                             |
+| --------------- | ----------------------------------------------------- | ------------------------------------------ |
+| **ffuf**        | Fuzzer rápido para descubrimiento de contenido web    | https://github.com/ffuf/ffuf               |
+| **gobuster**    | Descubrimiento de directorios, archivos y subdominios | https://github.com/OJ/gobuster             |
+| **feroxbuster** | Content discovery recursivo de alto rendimiento       | https://github.com/epi052/feroxbuster      |
+| **nikto**       | Escáner de vulnerabilidades web                       | https://github.com/sullo/nikto             |
+| **sqlmap**      | Detección y explotación de inyecciones SQL            | https://sqlmap.org                         |
+| **whatweb**     | Fingerprinting de tecnologías web                     | https://github.com/urbanadventurer/WhatWeb |
+| **wpscan**      | Escáner especializado para WordPress                  | https://github.com/wpscanteam/wpscan       |
 
 ---
 
-### Cracking y Fuerza Bruta
-| Herramienta     | Descripción | Enlace Oficial |
-|-----------------|-------------|----------------|
-| **hashcat**     | Cracker avanzado de contraseñas por GPU | [Hashcat](https://hashcat.net/hashcat/) |
-| **john** (JTR)  | Cracker clásico de contraseñas | [John the Ripper](https://www.openwall.com/john/) |
-| **hydra**       | Fuerza bruta de servicios de autenticación | [Hydra](https://github.com/vanhauser-thc/thc-hydra) |
+## Redes y Análisis de Tráfico
+
+| Herramienta   | Descripción                                                  | Enlace Oficial                            |
+| ------------- | ------------------------------------------------------------ | ----------------------------------------- |
+| **nmap**      | Escáner de red y puertos                                     | https://nmap.org                          |
+| **rustscan**  | Escáner de puertos ultrarrápido basado en Rust               | https://github.com/RustScan/RustScan      |
+| **naabu**     | Escáner moderno de puertos desarrollado por ProjectDiscovery | https://github.com/projectdiscovery/naabu |
+| **wireshark** | Analizador gráfico de tráfico de red                         | https://www.wireshark.org                 |
+| **tcpdump**   | Captura y análisis de tráfico desde consola                  | https://www.tcpdump.org                   |
+| **net-tools** | Utilidades clásicas de red (ifconfig, netstat, arp, etc.)    | https://github.com/ecki/net-tools         |
+| **httpx**     | Toolkit para validación y fingerprinting de hosts HTTP       | https://github.com/projectdiscovery/httpx |
 
 ---
 
-### WiFi Hacking
-| Herramienta     | Descripción | Enlace Oficial |
-|-----------------|-------------|----------------|
-| **aircrack-ng** | Cracking de WiFi (WEP/WPA/WPA2) | [Aircrack-ng](https://www.aircrack-ng.org/) |
-| **hcxtools**    | Herramientas para auditorías de redes WiFi | [hcxtools](https://github.com/ZerBea/hcxtools) |
-| **hcxdumptool** | Captura avanzada de handshakes WiFi | [hcxdumptool](https://github.com/ZerBea/hcxdumptool) |
+## Active Directory & Pentesting Interno
+
+| Herramienta       | Descripción                                                         | Enlace Oficial                            |
+| ----------------- | ------------------------------------------------------------------- | ----------------------------------------- |
+| **NetExec (NXC)** | Framework moderno para auditorías y enumeración en Active Directory | https://github.com/Pennyw0rth/NetExec     |
+| **Impacket**      | Colección de herramientas y librerías para protocolos de red        | https://github.com/fortra/impacket        |
+| **BloodHound CE** | Plataforma para análisis de relaciones y privilegios en AD          | https://github.com/SpecterOps/BloodHound  |
+| **Kerbrute**      | Enumeración y validación de cuentas Kerberos                        | https://github.com/ropnop/kerbrute        |
+| **enum4linux-ng** | Enumeración avanzada de servicios SMB y entornos Windows            | https://github.com/cddmp/enum4linux-ng    |
+| **Evil-WinRM**    | Acceso remoto y administración de sistemas Windows mediante WinRM   | https://github.com/Hackplayers/evil-winrm |
+| **smbclient**     | Cliente SMB para interacción con recursos compartidos               | https://www.samba.org                     |
 
 ---
 
-### Android & Mobile
-| Herramienta     | Descripción | Enlace Oficial |
-|-----------------|-------------|----------------|
-| **adb**         | Herramienta de depuración para Android | [ADB](https://developer.android.com/studio/command-line/adb) |
-| **scrcpy**      | Control y mirror de dispositivos Android vía USB/TCP | [Scrcpy](https://github.com/Genymobile/scrcpy) |
+## Reconocimiento y Enumeración
+
+| Herramienta   | Descripción                                       | Enlace Oficial                                |
+| ------------- | ------------------------------------------------- | --------------------------------------------- |
+| **Amass**     | Enumeración de dominios e infraestructura externa | https://github.com/owasp-amass/amass          |
+| **Subfinder** | Descubrimiento rápido de subdominios              | https://github.com/projectdiscovery/subfinder |
+| **Gobuster**  | Enumeración de directorios, DNS y VHosts          | https://github.com/OJ/gobuster                |
+| **Naabu**     | Descubrimiento rápido de puertos                  | https://github.com/projectdiscovery/naabu     |
+| **Httpx**     | Validación y fingerprinting de servicios web      | https://github.com/projectdiscovery/httpx     |
 
 ---
 
-### OSINT & Forense
-| Herramienta     | Descripción | Enlace Oficial |
-|-----------------|-------------|----------------|
-| **sherlock**    | Búsqueda de usuarios en redes sociales | [Sherlock](https://github.com/sherlock-project/sherlock) |
-| **binwalk**     | Análisis y extracción de firmware | [Binwalk](https://github.com/ReFirmLabs/binwalk) |
+## Cracking y Fuerza Bruta
 
-## Exploits y Vulnerabilidades
+| Herramienta         | Descripción                                  | Enlace Oficial                             |
+| ------------------- | -------------------------------------------- | ------------------------------------------ |
+| **Hashcat**         | Cracker avanzado de contraseñas mediante GPU | https://hashcat.net/hashcat                |
+| **John the Ripper** | Cracker clásico de contraseñas               | https://www.openwall.com/john              |
+| **Hydra**           | Fuerza bruta de servicios de autenticación   | https://github.com/vanhauser-thc/thc-hydra |
+| **Medusa**          | Herramienta modular de fuerza bruta paralela | https://github.com/jmk-foofus/medusa       |
+
+---
+
+## WiFi Hacking
+
+| Herramienta     | Descripción                        | Enlace Oficial              |
+| --------------- | ---------------------------------- | --------------------------- |
+| **Aircrack-ng** | Auditoría y cracking de redes WiFi | https://www.aircrack-ng.org |
+
+---
+
+## Android & Mobile
+
+| Herramienta | Descripción                                           | Enlace Oficial                          |
+| ----------- | ----------------------------------------------------- | --------------------------------------- |
+| **ADB**     | Android Debug Bridge para administración y depuración | https://developer.android.com/tools/adb |
+| **Scrcpy**  | Control y mirror de dispositivos Android vía USB/TCP  | https://github.com/Genymobile/scrcpy    |
+
+---
+
+## OSINT y Forense
+
+| Herramienta  | Descripción                                   | Enlace Oficial                               |
+| ------------ | --------------------------------------------- | -------------------------------------------- |
+| **Sherlock** | Búsqueda de usuarios en múltiples plataformas | https://github.com/sherlock-project/sherlock |
+| **Binwalk**  | Análisis y extracción de firmware             | https://github.com/ReFirmLabs/binwalk        |
+| **ExifTool** | Análisis y modificación de metadatos          | https://exiftool.org                         |
+
+---
+
+## Explotación y Frameworks
+
+| Herramienta                   | Descripción                                                    | Enlace Oficial             |
+| ----------------------------- | -------------------------------------------------------------- | -------------------------- |
+| **Metasploit Framework**      | Framework para pruebas de penetración y desarrollo de exploits | https://www.metasploit.com |
+| **Exploit-DB / Searchsploit** | Base de datos local y buscador de exploits públicos            | https://www.exploit-db.com |
+
+---
+
+## Wordlists Incluidas
+
+| Recurso         | Descripción                                                        |
+| --------------- | ------------------------------------------------------------------ |
+| **SecLists**    | Colección de diccionarios para fuzzing, enumeración y fuerza bruta |
+| **RockYou.txt** | Diccionario clásico de contraseñas ampliamente utilizado           |
+
+---
+
+## Compatibilidad
+
+* Ubuntu 24.04 LTS
+* Ubuntu 26.04 LTS
+* Arquitectura AMD64 (x86_64)
+
+---
+
+## Características
+
+* Instalación automatizada e idempotente.
+* Compatibilidad con Python 3.14.
+* Integración con Pipx, Go, Snap y RubyGems.
+* Despliegue opcional de BloodHound CE mediante Docker.
+* Configuración automática de aliases y variables de entorno.
+* Verificación visual del arsenal instalado.
+* Descarga automática de SecLists y RockYou.
+* Compilación optimizada de Scrcpy desde código fuente.
+
+
+
+
 | Herramienta     | Descripción | Enlace Oficial |
 |-----------------|-------------|----------------|
 | exploit-db      | Base de datos de exploits y vulnerabilidades | [Exploit-DB](https://www.exploit-db.com/) |
