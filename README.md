@@ -154,6 +154,4 @@ Este script automatiza la instalación de varias herramientas desde sus fuentes 
 
 
 
-| Herramienta     | Descripción | Enlace Oficial |
-|-----------------|-------------|----------------|
-| exploit-db      | Base de datos de exploits y vulnerabilidades | [Exploit-DB](https://www.exploit-db.com/) |
+
