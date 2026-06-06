@@ -17,8 +17,8 @@ Ubuntu ofrece un equilibrio perfecto entre robustez, facilidad de uso y un ecosi
 
 Por esta razón, les presento mi script de las herramientas mas usadas, totalmente compatibles para Ubuntu 24.04, aprovechando su estabilidad y la capacidad de mantener un entorno confiable para cualquier proyecto o tarea técnica.
 
-Este script automatiza la instalación de varias herramientas desde sus fuentes oficiales, esenciales para pentesting en la ultima versions LTS de Ubuntu (24.04). 
-(Cumple con todas sus dependencias en Ubuntu 24.04)
+Este script automatiza la instalación de varias herramientas desde sus fuentes oficiales, esenciales para pentesting en las ultimsa versiones LTS de Ubuntu (24.04 - 26.04). 
+(Cumple con todas sus dependencias en Ubuntu 24.04 - 26.04)
 
 # Herramientas de Hacking y Seguridad
 
