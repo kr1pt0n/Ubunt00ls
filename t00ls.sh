@@ -287,8 +287,28 @@ install_metasploit() {
     fi
 }
 
+install_burpsuite() {
+    echo -e "\n${BLUE}${BOLD}--- [10] INSTALANDO BURP SUITE PRO (AUT0BURP) ---${NC}\n"
+    log_info "Preparando directorio y clonando Aut0Burp..."
+    rm -rf /tmp/aut0burp
+    
+    if git clone https://github.com/kr1pt0n/aut0burp.git /tmp/aut0burp &>/dev/null; then
+        cd /tmp/aut0burp
+        chmod +x aut0burp.py
+        log_info "Iniciando script de instalación interactivo..."
+        echo -e "\n========================================================"
+        python3 aut0burp.py
+        echo -e "========================================================\n"
+        cd ~
+        rm -rf /tmp/aut0burp
+        log_ok "Burp Suite CE (Aut0Burp)"
+    else
+        log_fail "Burp Suite CE (Aut0Burp)"
+    fi
+}
+
 install_bloodhound() {
-    echo -e "\n${BLUE}${BOLD}--- [10] DESPLEGANDO BLOODHOUND CE ---${NC}\n"
+    echo -e "\n${BLUE}${BOLD}--- [11] DESPLEGANDO BLOODHOUND CE ---${NC}\n"
     install_if_missing docker docker.io
     install_if_missing "docker compose" docker-compose-v2
     echo "" # Espacio solicitado después de docker-compose-v2 OK
@@ -320,7 +340,7 @@ echo "   /_.''._'--('.')--'_.''._\\ "
 echo "   | \\_ / \`;=/ \" \\=;\` \\ _/ | "
 echo "    \\/ \`\\__|\`\\___/\`|__/\`  \\/ "
 echo "         \\(/|\\)/       "
-echo "         ubunt00l\$ By kr1pt0n v1.0"
+echo "         ubunt00l\$"
 echo -e "${NC}"
 
 echo -e "${BOLD}${BLUE}Seleccione los módulos que desea instalar (separados por comas):${NC}\n"
@@ -333,11 +353,12 @@ echo -e "  [6]  Android"
 echo -e "  [7]  OSINT & Forense"
 echo -e "  [8]  Wordlists & Aliases"
 echo -e "  [9]  Metasploit"
-echo -e "  [10] BloodHound CE"
-echo -e "  [11] ${BOLD}Instalar Arsenal Completo (Todo)${NC}"
+echo -e "  [10] Burp Suite CE (Aut0Burp)"
+echo -e "  [11] BloodHound CE"
+echo -e "  [12] ${BOLD}Instalar Arsenal Completo (Todo)${NC}"
 echo -e "  [0]  Salir\n"
 
-read -p "Ejemplo (1,2,3): " input_options
+read -p "Ejemplo (1,2,10): " input_options
 
 input_options=$(echo "$input_options" | tr -d ' ')
 
@@ -362,8 +383,9 @@ for option in "${ADDR[@]}"; do
         7)  install_osint ;;
         8)  install_wordlists ;;
         9)  install_metasploit ;;
-        10) install_bloodhound ;;
-        11) 
+        10) install_burpsuite ;;
+        11) install_bloodhound ;;
+        12) 
             install_base
             install_web
             install_ad
@@ -373,6 +395,7 @@ for option in "${ADDR[@]}"; do
             install_osint
             install_wordlists
             install_metasploit
+            install_burpsuite
             install_bloodhound
             break
             ;;
@@ -383,17 +406,17 @@ done
 # =============================
 # CIERRE Y DOCUMENTACIÓN
 # =============================
-if [[ " ${ADDR[*]} " =~ " 10 " || " ${ADDR[*]} " =~ " 11 " ]]; then
-    echo -e "\n${BLUE}${BOLD}==============================================================================${NC}"
-    echo -e "${GREEN}${BOLD}                   GUÍA DE MANTENIMIENTO DE BLOODHOUND CE      ${NC}"
-    echo -e "${BLUE}${BOLD}==============================================================================${NC}"
+if [[ " ${ADDR[*]} " =~ " 11 " || " ${ADDR[*]} " =~ " 12 " ]]; then
+    echo -e "\n${BLUE}${BOLD}==================================================================${NC}"
+    echo -e "${GREEN}${BOLD}                  🛠️  GUÍA DE MANTENIMIENTO DE BLOODHOUND CE      ${NC}"
+    echo -e "${BLUE}${BOLD}==================================================================${NC}"
     echo -e "  ${YELLOW}sudo bloodhound-ce update${NC}   -> Actualizar contenedores e imágenes."
     echo -e "  ${YELLOW}sudo bloodhound-ce resetpwd${NC} -> Restablecer contraseña del usuario 'admin'."
     echo -e "  ${YELLOW}sudo bloodhound-ce down${NC}     -> Apagar el servidor y liberar memoria RAM."
     echo -e "  ${YELLOW}sudo bloodhound-ce up${NC}       -> Levantar el entorno con datos guardados."
-    echo -e "${BLUE}${BOLD}==============================================================================${NC}"
+    echo -e "${BLUE}${BOLD}==================================================================${NC}"
 fi
 
 echo -e "\n${GREEN}${BOLD}[✔] ¡Auditoría modular lista!${NC}"
 echo -e "${YELLOW}${BOLD}[!] Para aplicar los cambios de entorno y aliases ejecuta: source ~/.bashrc${NC}"
-echo -e "${BLUE}${BOLD}==============================================================================${NC}\n"
+echo -e "${BLUE}${BOLD}==================================================================${NC}\n"
