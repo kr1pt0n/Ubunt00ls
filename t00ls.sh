@@ -102,6 +102,7 @@ export PYO3_USE_ABI3_FORWARD_COMPATIBILITY=1
 log_info "Instalando dependencias base (APT y Lenguajes)..."
 sudo apt install -y pipx git rustc cargo build-essential python3-dev libffi-dev golang libpcap-dev python3-impacket
 pipx ensurepath
+hash -r
 
 log_info "Instalando herramientas de pentesting (APT)..."
 install_if_missing gobuster gobuster
