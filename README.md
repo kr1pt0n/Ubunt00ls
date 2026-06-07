@@ -8,6 +8,7 @@
 ---
 Ubunt00ls es un script de automatización en Bash que facilita el despliegue de un entorno de trabajo para networking, administración de sistemas y pruebas de seguridad en sistemas Ubuntu/Debian. El proyecto busca proporcionar una instalación rápida, organizada y reproducible de herramientas comúnmente utilizadas por profesionales de TI, Hacker Eticos, Pentesters y Cibercriminales, optimizando la configuración inicial del sistema y mejorando la productividad..
 
+Por esta razón, les presento mi script de las herramientas mas usadas, totalmente compatibles para Ubuntu 24.04 y 26.04, aprovechando su estabilidad y la capacidad de mantener un entorno confiable para cualquier proyecto o tarea técnica.
 
 ---
 Instalación rápida
@@ -20,10 +21,9 @@ chmod +x t00ls.sh
 
 Ubuntu ofrece un equilibrio perfecto entre robustez, facilidad de uso y un ecosistema ampliamente soportado, lo que garantiza que el sistema operativo funcione de manera fluida y sin interrupciones, ideal para desarrollar y ejecutar herramientas sin complicaciones.
 
-Por esta razón, les presento mi script de las herramientas mas usadas, totalmente compatibles para Ubuntu 24.04, aprovechando su estabilidad y la capacidad de mantener un entorno confiable para cualquier proyecto o tarea técnica.
 
-Este script automatiza la instalación de varias herramientas desde sus fuentes oficiales, esenciales para pentesting en las ultimsa versiones LTS de Ubuntu (24.04 - 26.04). 
-(Cumple con todas sus dependencias en Ubuntu 24.04 - 26.04)
+
+
 
 # Herramientas de Hacking y Seguridad
 
