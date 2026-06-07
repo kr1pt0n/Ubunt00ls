@@ -1,5 +1,10 @@
 # Ubunt00ls — Instalador de herramientas de Pentesting para Ubuntu
+![Platform](https://img.shields.io/badge/Platform-Ubuntu%20Linux-E95420?logo=ubuntu&logoColor=white)
+![Language](https://img.shields.io/badge/Language-Bash%20%2F%20Shell-4E9A06?logo=gnu-bash&logoColor=white)
+![Environment](https://img.shields.io/badge/Focus-Pentesting%20%26%20Auditing-red?logo=linux&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-green)
 ![N|Solid](https://www-file.huawei.com/admin/asset/v1/pro/view/501c611b6f92446c9a990b166d1ff90a.jpg)
+
 Script en **bash** que automatiza la instalación de un kit de herramientas de pentesting y networking en **Ubuntu/Debian**.
 
 >  **Aviso legal:** Usa estas herramientas únicamente en entornos propios o con permiso explícito. El uso indebido puede ser ilegal.
