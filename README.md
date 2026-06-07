@@ -7,8 +7,8 @@
 
 ![Banner](https://i.ibb.co/yBxwnb1y/Chat-GPT-Image-6-jun-2026-07-13-40-p-m.png)
 ---
-Script en **bash** que automatiza la instalación de un kit de herramientas de pentesting y networking en **Ubuntu/Debian**.
-  **Aviso legal:** Usa estas herramientas únicamente en entornos propios o con permiso explícito. El uso indebido puede ser ilegal.
+Ubunt00ls es un script de automatización en Bash que facilita el despliegue de un entorno de trabajo para networking, administración de sistemas y pruebas de seguridad en sistemas Ubuntu/Debian. El proyecto busca proporcionar una instalación rápida, organizada y reproducible de herramientas comúnmente utilizadas por profesionales de ciberseguridad y equipos de RedTeam, optimizando la configuración inicial del sistema y mejorando la productividad..
+
 
 ---
 Instalación rápida
@@ -157,7 +157,7 @@ Este script automatiza la instalación de varias herramientas desde sus fuentes 
 * Descarga automática de SecLists y RockYou.
 * Compilación optimizada de Scrcpy desde código fuente.
 
-
-
+---
+  **Aviso legal:** Usa estas herramientas únicamente en entornos propios o con permiso explícito. El uso indebido puede ser ilegal.
 
 
