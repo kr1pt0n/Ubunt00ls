@@ -6,6 +6,7 @@
   ![License](https://img.shields.io/badge/License-MIT-green)
 
 ![Banner](https://i.ibb.co/yBxwnb1y/Chat-GPT-Image-6-jun-2026-07-13-40-p-m.png)
+---
 Script en **bash** que automatiza la instalación de un kit de herramientas de pentesting y networking en **Ubuntu/Debian**.
 
   **Aviso legal:** Usa estas herramientas únicamente en entornos propios o con permiso explícito. El uso indebido puede ser ilegal.
