@@ -1,4 +1,5 @@
-# Ubunt00ls — Instalador de herramientas de Pentesting para Ubuntu
+# Ubunt00ls — 
+(Kit de herramientas de Pentesting para Ubuntu)
   ![Platform](https://img.shields.io/badge/Platform-Ubuntu%20Linux-E95420?logo=ubuntu&logoColor=white)
   ![Language](https://img.shields.io/badge/Language-Bash%20%2F%20Shell-4E9A06?logo=gnu-bash&logoColor=white)
   ![Environment](https://img.shields.io/badge/Focus-Pentesting%20%26%20Auditing-red?logo=linux&logoColor=white)
