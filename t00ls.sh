@@ -323,35 +323,35 @@ install_ad() {
 
 
 install_recon() {
-
     echo -e "\n${BLUE}${BOLD}=========================================${NC}"
-
     echo -e "${BLUE}${BOLD}--- [4] INSTALANDO RECONOCIMIENTO -------${NC}"
-
     echo -e "${BLUE}${BOLD}=========================================${NC}"
-
     install_if_missing nmap nmap
-
     install_if_missing ifconfig net-tools
-
     install_if_missing tcpdump tcpdump
 
-    install_if_missing wireshark wireshark
+    # [FIX 1] Limpiar posibles residuos de grupos viejos conflictivos
+    sudo groupdel wireshark 2>/dev/null || true
 
+    # [FIX 2] Pre-configurar debconf en "SÍ" para que la instalación NO sea interactiva
+    echo "wireshark-common wireshark-common/install-setuid boolean true" | sudo debconf-set-selections
+
+    install_if_missing wireshark wireshark
     install_if_missing aircrack-ng aircrack-ng
 
+    # [FIX 3] Forzar la reconfiguración limpia sin ventanas emergentes
+    sudo DEBIAN_FRONTEND=noninteractive dpkg-reconfigure wireshark-common
 
-
-    sudo dpkg-reconfigure wireshark-common
-
+    # [FIX 4] Asignar correctamente los privilegios y las Linux Capabilities a dumpcap
     if [ -f /usr/bin/dumpcap ]; then
-
-        sudo chown root:root /usr/bin/dumpcap
-
-        sudo chmod 700 /usr/bin/dumpcap
-
+        sudo chown root:wireshark /usr/bin/dumpcap
+        sudo chmod 750 /usr/bin/dumpcap
+        sudo setcap cap_net_raw,cap_net_admin=eip /usr/bin/dumpcap
     fi
 
+    # [FIX 5] Añadir automáticamente al usuario del script al grupo para evitar que use sudo
+    sudo usermod -aG wireshark "$USER"
+    log_ok "Wireshark configurado sin interacción para el usuario: $USER"
 
 
     for snap_pkg in rustscan feroxbuster amass httpx; do
