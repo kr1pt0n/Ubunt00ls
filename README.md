@@ -6,7 +6,7 @@
 
 ![Banner](https://i.ibb.co/yBxwnb1y/Chat-GPT-Image-6-jun-2026-07-13-40-p-m.png)
 ---
-Ubunt00ls es un script de automatización en Bash que facilita el despliegue de un entorno de trabajo para networking, administración de sistemas y pruebas de seguridad en sistemas Ubuntu/Debian. El proyecto busca proporcionar una instalación rápida, organizada y reproducible de herramientas comúnmente utilizadas por profesionales de ciberseguridad y equipos de RedTeam, optimizando la configuración inicial del sistema y mejorando la productividad..
+Ubunt00ls es un script de automatización en Bash que facilita el despliegue de un entorno de trabajo para networking, administración de sistemas y pruebas de seguridad en sistemas Ubuntu/Debian. El proyecto busca proporcionar una instalación rápida, organizada y reproducible de herramientas comúnmente utilizadas por profesionales de TI, Hacker Eticos, Pentesters y Cibercriminales, optimizando la configuración inicial del sistema y mejorando la productividad..
 
 
 ---
