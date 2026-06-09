@@ -4,7 +4,7 @@
   ![Environment](https://img.shields.io/badge/Focus-Pentesting%20%26%20Auditing-red?logo=linux&logoColor=white)
   ![License](https://img.shields.io/badge/License-MIT-green)
 
-![Banner](https://i.ibb.co/yBxwnb1y/Chat-GPT-Image-6-jun-2026-07-13-40-p-m.png)
+![Banner](https://i.ibb.co/sd7HRt5j/Gemini-Generated-Image-s9x5lps9x5lps9x5.png)
 ---
 Ubunt00ls es un script de automatización en Bash que facilita el despliegue de un entorno de trabajo para networking, administración de sistemas y pruebas de seguridad en sistemas Ubuntu/Debian. El proyecto busca proporcionar una instalación rápida, organizada y reproducible de herramientas comúnmente utilizadas por profesionales de TI, Hacker Eticos, Pentesters y Cibercriminales, optimizando la configuración inicial del sistema y mejorando la productividad..
 
